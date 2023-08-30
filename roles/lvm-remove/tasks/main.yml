@@ -1,0 +1,41 @@
+- name: Unmount volume
+  vars: 
+    device_name: "/dev/{{ item['vg_name'] }}/{{ item['lv_name'] }}"
+    mountPoint: "{{ item['mountPoint'] }}"
+    filesystem: "{{ item['filesystem']['type'] }}"
+    options: "{{ item['filesystem']['options'] | join(',') }}"
+    dump: "{{ item['filesystem']['dump'] | string }}"
+  ansible.posix.mount:
+    path: "{{ mountPoint }}"
+    src: "{{ device_name }}"
+    fstype: "{{ filesystem }}"
+    opts: "{{ options }}"
+    dump: "{{ dump }}"
+    state: absent
+  loop: "{{ lvms }}"
+
+- name: Delete filesystems
+  community.general.filesystem:
+    dev: "/dev/{{ item['vg_name'] }}/{{ item['lv_name'] }}"
+    fstype: "{{ item['filesystem']['type'] | lower }}"
+    resizefs: True
+    state: absent
+  loop: "{{ lvms }}"
+
+- name: Delete LVs
+  community.general.lvol:
+    lv: "{{ item['lv_name'] }}"
+    vg: "{{ item['vg_name'] }}"
+    state: absent
+    size: "{{ item['size'] }}"
+    force: true
+  loop: "{{ lvms }}"
+
+- name: Delete directory for mount-point
+  ansible.builtin.file:
+    path: "{{ item['mountPoint'] }}"
+    state: absent
+  loop: "{{ lvms }}"
+
+
+

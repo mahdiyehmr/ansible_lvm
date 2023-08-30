@@ -1,0 +1,36 @@
+lvms:
+  - vg_name: databases
+    lv_name: mysql
+    size: 5G
+    disks: 
+      - /dev/sdb
+      - /dev/sdc
+      - /dev/sdd
+    filesystem:
+      type: xfs
+      options: ["defaults"]
+      dump: "0"
+    mountPoint: /var/lib/mysql
+  - vg_name: databases
+    lv_name: redis
+    size: 5G
+    disks: 
+      - /dev/sdb
+      - /dev/sdc
+      - /dev/sdd
+    filesystem:
+      type: ext4
+      options: ["defaults"]
+      dump: "0"
+    mountPoint: /var/lib/redis
+  - vg_name: backup
+    lv_name: first
+    size: +100%FREE
+    disks: 
+      - /dev/sde
+      - /dev/sdf
+    filesystem:
+      type: ext4
+      options: ["defaults"]
+      dump: "0"
+    mountPoint: /backup

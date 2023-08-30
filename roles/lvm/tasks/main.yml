@@ -1,0 +1,51 @@
+- name: Install lvm2 package
+  ansible.builtin.package:
+    name: 
+      - lvm2
+
+- name: Create directory for mount-point
+  ansible.builtin.file:
+    path: "{{ item['mountPoint'] }}"
+    state: directory
+  loop: "{{ lvms }}"
+
+- name: Create PVs and VGs
+  community.general.lvg:
+    vg: "{{ item['vg_name'] }}"
+    pvs: "{{ item['disks'] }}"
+    state: present
+  loop: "{{ lvms }}"
+  when: item['disks'] | length > 0
+
+- name: Create LVs
+  community.general.lvol:
+    lv: "{{ item['lv_name'] }}"
+    vg: "{{ item['vg_name'] }}"
+    state: present
+    size: "{{ item['size'] }}"
+  loop: "{{ lvms }}"
+
+
+- name: Create filesystems
+  community.general.filesystem:
+    dev: "/dev/{{ item['vg_name'] }}/{{ item['lv_name'] }}"
+    fstype: "{{ item['filesystem']['type'] | lower }}"
+    resizefs: True
+    state: present
+  loop: "{{ lvms }}"
+
+- name: Mount volume
+  vars: 
+    device_name: "/dev/{{ item['vg_name'] }}/{{ item['lv_name'] }}"
+    mountPoint: "{{ item['mountPoint'] }}"
+    filesystem: "{{ item['filesystem']['type'] }}"
+    options: "{{ item['filesystem']['options'] | join(',') }}"
+    dump: "{{ item['filesystem']['dump'] | string }}"
+  ansible.posix.mount:
+    path: "{{ mountPoint }}"
+    src: "{{ device_name }}"
+    fstype: "{{ filesystem }}"
+    opts: "{{ options }}"
+    dump: "{{ dump }}"
+    state: mounted
+  loop: "{{ lvms }}"

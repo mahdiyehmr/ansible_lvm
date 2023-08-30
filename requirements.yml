@@ -1,0 +1,5 @@
+---
+# These are Ansible requirements needed to run LVM main
+collections:
+  - name: community.general
+  - name: ansible.posix

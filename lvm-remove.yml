@@ -1,0 +1,5 @@
+- name: LVM Management
+  hosts: all
+  become: true
+  roles:
+    - lvm-remove
