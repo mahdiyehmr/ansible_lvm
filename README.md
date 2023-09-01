@@ -1,4 +1,5 @@
-# Vagrant
+# LVM
+## Vagrant
 If you want to test this ansible in your local environment you can just download vagrant and after cloning the repository and going to the working directory where the Vagrantfile is, follow these steps to prepare the required test environment.
 ```
 VAGRANT_EXPERIMENTAL=disks vagrant up
@@ -68,7 +69,7 @@ For removing the partitions:
 ansible-playbook -b -i inventory/vagrant_hosts/hosts.yml lvm-remove.yml
 ```
 ## Notes
-1. Instead of steps 1 to 5 you can run [install-env](https://github.com) script and switch to the environment.
+1. Instead of steps 1 to 5 you can run [install-env](https://github.com/mahdiyehmr/ansible_lvm/blob/main/install-venv.sh) script and switch to the environment.
 ```
 source .env/bin/activate
 ```
